@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0a12">
+
+    <title>AI Face Studio — Creative Face Editor</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a class="brand" href="/">
+        <span class="brand-symbol">✦</span>
+        <span>Face<span class="brand-highlight">Studio</span></span>
+        <span class="brand-version">AI</span>
+    </a>
+
+    <div class="topright">
+        <span class="privacy">
+            <span class="privacy-dot"></span>
+            Browser-based editing
+        </span>
+
+        <span id="aiStatus" class="status">
+            Loading face engine...
+        </span>
+    </div>
+
+</header>
+
+
+<main class="app">
+
+    <section class="workspace">
+
+        <!-- MAIN EDITOR -->
+
+        <div class="editor">
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        <span class="eyebrow-line"></span>
+                        CREATIVE WORKSPACE
+                    </div>
+
+                    <h1>Make your face <span>stand out.</span></h1>
+
+                    <p>
+                        Create stunning selfies with real-time AR effects
+                        and intelligent photo editing.
+                    </p>
+                </div>
+
+                <button id="clear" class="secondary clear-button" disabled>
+                    <span>↺</span> Clear
+                </button>
+
+            </div>
+
+
+            <!-- EDITOR MODE -->
+
+            <div class="mode-tabs">
+
+                <button id="photoMode" class="mode-tab active">
+                    <span class="tab-icon">▧</span>
+                    Photo Editor
+                </button>
+
+                <button id="cameraMode" class="mode-tab">
+                    <span class="tab-icon">◉</span>
+                    Live Camera
+                </button>
+
+            </div>
+
+
+            <!-- PHOTO UPLOAD -->
+
+            <div id="photoUpload" class="dropzone">
+
+                <input
+                        type="file"
+                        id="photoInput"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                >
+
+                <div class="upload-visual">
+                    <div class="upload-icon">↑</div>
+                </div>
+
+                <h3>Drop your selfie here</h3>
+
+                <p>
+                    Drag and drop your image or
+                    <span class="browse-text">browse files</span>
+                </p>
+
+                <div class="upload-meta">
+                    <span>JPG</span>
+                    <span>PNG</span>
+                    <span>WEBP</span>
+                    <span>MAX 15 MB</span>
+                </div>
+
+            </div>
+
+
+            <!-- CAMERA CONTROLS -->
+
+            <div class="camera-controls" id="cameraControls">
+
+                <button id="startCamera" class="primary">
+                    <span>◉</span> Start camera
+                </button>
+
+                <button id="stopCamera" class="secondary" disabled>
+                    Stop camera
+                </button>
+
+                <span id="cameraMessage">
+                    Camera is stopped.
+                </span>
+
+            </div>
+
+
+            <div id="fileInfo" class="file-info"></div>
+
+            <div id="notice" class="notice"></div>
+
+
+            <!-- IMAGE EDITING STAGE -->
+
+            <div class="stage" id="stage">
+
+                <div class="stage-top-label">
+                    <span class="live-indicator"></span>
+                    EDITING CANVAS
+                </div>
+
+                <div id="empty" class="empty">
+
+                    <div class="empty-icon">✦</div>
+
+                    <h3>Your canvas is waiting</h3>
+
+                    <p>
+                        Upload a photo or activate your camera
+                        to start creating.
+                    </p>
+
+                </div>
+
+                <video
+                        id="cameraVideo"
+                        autoplay
+                        playsinline
+                        muted
+                ></video>
+
+                <canvas id="canvas"></canvas>
+
+                <div id="faceStatus" class="face-status">
+                    Face detection is waiting
+                </div>
+
+                <div id="size" class="size-label"></div>
+
+            </div>
+
+
+            <!-- EDITOR ACTIONS -->
+
+            <div class="toolbar">
+
+                <button id="download" class="primary download-button" disabled>
+                    <span>↓</span>
+                    Download PNG
+                </button>
+
+                <button id="clearEffect" class="secondary" disabled>
+                    <span>✕</span>
+                    Remove effect
+                </button>
+
+            </div>
+
+
+            <div class="editor-footer">
+
+                <div class="footer-icon">ⓘ</div>
+
+                <p class="helper">
+                    For accurate face tracking, keep your face visible
+                    and use good lighting. AR effects automatically
+                    follow detected facial landmarks.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDEBAR -->
+
+        <aside class="sidebar">
+
+
+            <!-- AR EFFECTS -->
+
+            <section class="panel effects-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <div class="panel-kicker">PERSONALIZE</div>
+                        <h2>AR Effects</h2>
+                    </div>
+
+                    <span class="panel-count">08 EFFECTS</span>
+
+                </div>
+
+                <p class="muted">
+                    Choose a lens and see it come to life on your face.
+                </p>
+
+
+                <div class="effect-grid">
+
+                    <button class="effect active" data-effect="dog">
+                        <span class="effect-icon">🐶</span>
+                        <span>Dog</span>
+                    </button>
+
+                    <button class="effect" data-effect="anime">
+                        <span class="effect-icon">✦</span>
+                        <span>Anime eyes</span>
+                    </button>
+
+                    <button class="effect" data-effect="devil">
+                        <span class="effect-icon">♨</span>
+                        <span>Devil</span>
+                    </button>
+
+                    <button class="effect" data-effect="angel">
+                        <span class="effect-icon">✧</span>
+                        <span>Angel</span>
+                    </button>
+
+                    <button class="effect" data-effect="butterfly">
+                        <span class="effect-icon">🦋</span>
+                        <span>Butterfly</span>
+                    </button>
+
+                    <button class="effect" data-effect="glasses">
+                        <span class="effect-icon">◉</span>
+                        <span>Glasses</span>
+                    </button>
+
+                    <button class="effect" data-effect="glow">
+                        <span class="effect-icon">✧</span>
+                        <span>Beauty glow</span>
+                    </button>
+
+                    <button class="effect" data-effect="hearts">
+                        <span class="effect-icon">♥</span>
+                        <span>Hearts</span>
+                    </button>
+
+                </div>
+
+
+                <div class="control-divider"></div>
+
+                <label>
+                    <span>Effect intensity</span>
+                    <output id="intensityValue">100%</output>
+                </label>
+
+                <input
+                        type="range"
+                        id="intensity"
+                        min="0"
+                        max="100"
+                        value="100"
+                        disabled
+                >
+
+                <div class="range-labels">
+                    <span>Subtle</span>
+                    <span>Strong</span>
+                </div>
+
+            </section>
+
+
+            <!-- PHOTO ADJUSTMENTS -->
+
+            <section class="panel adjustments-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <div class="panel-kicker">FINE TUNING</div>
+                        <h2>Photo Adjustments</h2>
+                    </div>
+
+                    <span class="adjustment-icon">☷</span>
+
+                </div>
+
+
+                <div class="adjustment-control">
+
+                    <label>
+                        <span>Brightness</span>
+                        <output id="brightnessValue">100%</output>
+                    </label>
+
+                    <input
+                            type="range"
+                            id="brightness"
+                            min="0"
+                            max="200"
+                            value="100"
+                            disabled
+                    >
+
+                </div>
+
+
+                <div class="adjustment-control">
+
+                    <label>
+                        <span>Contrast</span>
+                        <output id="contrastValue">100%</output>
+                    </label>
+
+                    <input
+                            type="range"
+                            id="contrast"
+                            min="0"
+                            max="200"
+                            value="100"
+                            disabled
+                    >
+
+                </div>
+
+
+                <div class="adjustment-control">
+
+                    <label>
+                        <span>Saturation</span>
+                        <output id="saturationValue">100%</output>
+                    </label>
+
+                    <input
+                            type="range"
+                            id="saturation"
+                            min="0"
+                            max="200"
+                            value="100"
+                            disabled
+                    >
+
+                </div>
+
+
+                <button id="resetAdjustments" class="secondary full" disabled>
+                    ↺ Reset adjustments
+                </button>
+
+            </section>
+
+
+            <!-- AI LAB -->
+
+            <section class="panel ai-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+                        <div class="panel-kicker">POWERED BY AI</div>
+                        <h2>AI Lab</h2>
+                    </div>
+
+                    <span class="ai-badge">AI</span>
+
+                </div>
+
+                <p class="muted">
+                    Explore AI-powered transformations for your photo.
+                </p>
+
+
+                <label class="field-label" for="feature">
+                    Transformation
+                </label>
+
+                <select id="feature">
+                    <option value="hairstyle">Hairstyle</option>
+                    <option value="beard">Beard</option>
+                    <option value="age">Age</option>
+                    <option value="beauty">Beauty</option>
+                    <option value="background">Background</option>
+                </select>
+
+
+                <label class="field-label" for="style">
+                    Describe your look
+                </label>
+
+                <input
+                        type="text"
+                        id="style"
+                        placeholder="e.g. Modern layered hairstyle"
+                >
+
+                <button id="generate" class="primary full generate-button" disabled>
+                    <span>✦</span>
+                    Generate AI edit
+                </button>
+
+                <p id="aiMessage" class="muted ai-message"></p>
+
+            </section>
+
+        </aside>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+    <span>FACE STUDIO</span>
+    <span>Creative editing, made simple.</span>
+</footer>
+
+
+<script type="module" th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
